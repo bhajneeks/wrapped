@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { colors, accent, spring } from '../../tokens'
+import { colors, spring } from '../../tokens'
+import { useAccentColor } from '../../AccentContext'
 import type { TrendCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { CardBg } from '../CardBg'
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export function TrendCard({ data, theme }: Props) {
-  const accentColor = accent(theme)
+  const accentColor = useAccentColor()
   const reduced = useReducedMotion()
   const bars = data.bars.length > 0 ? data.bars : []
   const maxVal = Math.max(...bars.map(b => b.value), 1)
@@ -29,7 +30,7 @@ export function TrendCard({ data, theme }: Props) {
         position: 'relative',
       }}
     >
-      <CardBg theme={theme} />
+      <CardBg />
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}

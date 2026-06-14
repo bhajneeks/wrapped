@@ -1,15 +1,13 @@
 import { motion } from 'framer-motion'
-import { accent } from '../tokens'
-import type { Theme } from '../tokens'
+import { useAccentColor } from '../AccentContext'
 
 interface Props {
   total: number
   current: number
-  theme: Theme
 }
 
-export function ProgressBar({ total, current, theme }: Props) {
-  const accentColor = accent(theme)
+export function ProgressBar({ total, current }: Props) {
+  const accentColor = useAccentColor()
 
   return (
     <div

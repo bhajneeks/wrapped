@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { colors, accent, spring } from '../../tokens'
+import { colors, spring } from '../../tokens'
+import { useAccentColor } from '../../AccentContext'
 import type { TopItemCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { CardBg } from '../CardBg'
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export function TopItemCard({ data, theme }: Props) {
-  const accentColor = accent(theme)
+  const accentColor = useAccentColor()
   const reduced = useReducedMotion()
   const maxVal = Math.max(...data.bars.map(b => b.value), 1)
 
@@ -36,7 +37,7 @@ export function TopItemCard({ data, theme }: Props) {
         position: 'relative',
       }}
     >
-      <CardBg theme={theme} />
+      <CardBg />
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}

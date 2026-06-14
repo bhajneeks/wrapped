@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { colors, accent, spring } from '../../tokens'
+import { colors, spring } from '../../tokens'
+import { useAccentColor } from '../../AccentContext'
 import type { HighlightCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { CardBg } from '../CardBg'
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export function HighlightCard({ data, theme }: Props) {
-  const accentColor = accent(theme)
+  const accentColor = useAccentColor()
   const reduced = useReducedMotion()
 
   return (
@@ -26,7 +27,7 @@ export function HighlightCard({ data, theme }: Props) {
         overflow: 'hidden',
       }}
     >
-      <CardBg theme={theme} />
+      <CardBg />
 
       {/* Large decorative star watermark */}
       <motion.div

@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion'
-import { colors, accent } from '../../tokens'
+import { colors } from '../../tokens'
 import type { WelcomeCardData } from '../../adapter/types'
 import { CardBg } from '../CardBg'
+import { useAccentColor } from '../../AccentContext'
 
 interface Props {
   data: WelcomeCardData
 }
 
 export function WelcomeCard({ data }: Props) {
-  const accentColor = accent(data.theme)
+  const accentColor = useAccentColor()
 
   return (
     <div
@@ -24,7 +25,7 @@ export function WelcomeCard({ data }: Props) {
         padding: '0 32px',
       }}
     >
-      <CardBg theme={data.theme} />
+      <CardBg />
 
       <div style={{ textAlign: 'center', zIndex: 2, width: '100%', position: 'relative' }}>
         <motion.div

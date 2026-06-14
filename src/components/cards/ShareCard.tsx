@@ -1,8 +1,9 @@
 import { useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { toPng } from 'html-to-image'
-import { colors, accent } from '../../tokens'
+import { colors } from '../../tokens'
 import type { ShareCardData } from '../../adapter/types'
+import { useAccentColor, useSetAccentColor } from '../../AccentContext'
 
 interface Props {
   data: ShareCardData
@@ -10,7 +11,9 @@ interface Props {
 
 export function ShareCard({ data }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const ac = accent(data.theme)
+  const wheelRef = useRef<HTMLDivElement>(null)
+  const ac = useAccentColor()
+  const setAccent = useSetAccentColor()
 
   const handleDownload = useCallback(
     async (e: React.MouseEvent) => {
@@ -32,6 +35,37 @@ export function ShareCard({ data }: Props) {
     [data.userName, data.year]
   )
 
+  const pickColorFromEvent = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!wheelRef.current) return
+      const rect = wheelRef.current.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const angle = Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI)
+      // +90 aligns atan2 (0° = right) with conic-gradient (0° = top)
+      const hue = Math.round((angle + 90 + 360) % 360)
+      setAccent(`hsl(${hue}, 100%, 58%)`)
+    },
+    [setAccent]
+  )
+
+  const handleWheelClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      pickColorFromEvent(e.clientX, e.clientY)
+    },
+    [pickColorFromEvent]
+  )
+
+  const handleWheelTouch = useCallback(
+    (e: React.TouchEvent) => {
+      e.stopPropagation()
+      const t = e.changedTouches[0]
+      pickColorFromEvent(t.clientX, t.clientY)
+    },
+    [pickColorFromEvent]
+  )
+
   return (
     <div
       style={{
@@ -42,7 +76,7 @@ export function ShareCard({ data }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '0 20px',
-        gap: 22,
+        gap: 18,
         overflow: 'hidden',
       }}
     >
@@ -62,7 +96,7 @@ export function ShareCard({ data }: Props) {
           border: `1px solid ${ac}30`,
         }}
       >
-        {/* Background — large radial bloom top-left */}
+        {/* Background blooms */}
         <div
           style={{
             position: 'absolute',
@@ -73,7 +107,6 @@ export function ShareCard({ data }: Props) {
             pointerEvents: 'none',
           }}
         />
-        {/* Secondary bloom bottom-right */}
         <div
           style={{
             position: 'absolute',
@@ -84,7 +117,6 @@ export function ShareCard({ data }: Props) {
             pointerEvents: 'none',
           }}
         />
-        {/* Thin diagonal highlight line */}
         <div
           style={{
             position: 'absolute',
@@ -97,7 +129,7 @@ export function ShareCard({ data }: Props) {
         {/* Content */}
         <div style={{ padding: '28px 26px 26px', position: 'relative', zIndex: 1 }}>
 
-          {/* Header row — year on left, theme badge on right */}
+          {/* Header row */}
           <div
             style={{
               display: 'flex',
@@ -193,7 +225,7 @@ export function ShareCard({ data }: Props) {
             }}
           />
 
-          {/* Supporting stats pills */}
+          {/* Supporting stats */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {data.stats.map(stat => (
               <div
@@ -235,7 +267,7 @@ export function ShareCard({ data }: Props) {
             ))}
           </div>
 
-          {/* Wordmark footer */}
+          {/* Wordmark */}
           <div
             style={{
               marginTop: 22,
@@ -251,9 +283,63 @@ export function ShareCard({ data }: Props) {
         </div>
       </motion.div>
 
-      {/* Download button — outside the captured region */}
+      {/* ——— Color picker — outside the captured region ——— */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+        }}
+      >
+        <div
+          style={{
+            color: colors.textMuted,
+            fontSize: 10,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Color
+        </div>
+
+        {/* Color wheel — conic gradient circle */}
+        <div
+          ref={wheelRef}
+          onClick={handleWheelClick}
+          onTouchEnd={handleWheelTouch}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: '50%',
+            background:
+              'conic-gradient(hsl(0,100%,58%), hsl(30,100%,58%), hsl(60,100%,58%), hsl(90,100%,58%), hsl(120,100%,58%), hsl(150,100%,58%), hsl(180,100%,58%), hsl(210,100%,58%), hsl(240,100%,58%), hsl(270,100%,58%), hsl(300,100%,58%), hsl(330,100%,58%), hsl(360,100%,58%))',
+            cursor: 'pointer',
+            border: '2px solid rgba(255,255,255,0.18)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
+            flexShrink: 0,
+          }}
+        />
+
+        {/* Current color preview dot */}
+        <motion.div
+          animate={{ background: ac, boxShadow: `0 0 14px ${ac}70` }}
+          transition={{ duration: 0.2 }}
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: '50%',
+            border: '2px solid rgba(255,255,255,0.25)',
+            flexShrink: 0,
+          }}
+        />
+      </motion.div>
+
+      {/* Download button */}
       <motion.button
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         onClick={handleDownload}
@@ -270,6 +356,7 @@ export function ShareCard({ data }: Props) {
           letterSpacing: '0.05em',
           fontFamily: 'inherit',
           boxShadow: `0 4px 24px ${ac}40`,
+          transition: 'background 0.2s, box-shadow 0.2s',
         }}
       >
         Download Card

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { colors, accent, spring } from '../../tokens'
+import { colors, spring } from '../../tokens'
+import { useAccentColor } from '../../AccentContext'
 import type { VolumeCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { useCountUp } from '../../hooks/useCountUp'
@@ -18,8 +19,8 @@ function heroFontSize(formatted: string): string {
   return 'clamp(64px, 18vw, 100px)'
 }
 
-export function VolumeCard({ data, theme }: Props) {
-  const accentColor = accent(theme)
+export function VolumeCard({ data }: Props) {
+  const accentColor = useAccentColor()
   const reduced = useReducedMotion()
   const count = useCountUp(data.value)
   const finalFormatted = formatNumber(data.value)
@@ -37,7 +38,7 @@ export function VolumeCard({ data, theme }: Props) {
         overflow: 'hidden',
       }}
     >
-      <CardBg theme={theme} />
+      <CardBg />
 
       {/* Ghost watermark */}
       <div

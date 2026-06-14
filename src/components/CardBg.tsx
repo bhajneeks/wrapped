@@ -1,25 +1,20 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { accent } from '../tokens'
-import type { Theme } from '../tokens'
+import { useAccentColor } from '../AccentContext'
 
-// SVG fractal-noise grain encoded as a data URI; tiles at 200×200px
 const GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'%2F%3E%3C%2Ffilter%3E%3Crect width='200' height='200' filter='url(%23n)'%2F%3E%3C%2Fsvg%3E")`
 
 interface Props {
-  theme: Theme
-  /** 'intense' increases bloom opacity for the share-card poster */
   variant?: 'default' | 'intense'
 }
 
-export function CardBg({ theme, variant = 'default' }: Props) {
-  const ac = accent(theme)
+export function CardBg({ variant = 'default' }: Props) {
+  const ac = useAccentColor()
   const reduced = useReducedMotion()
   const primaryAlpha = variant === 'intense' ? '28' : '18'
   const secondaryAlpha = variant === 'intense' ? '18' : '0E'
 
   return (
     <>
-      {/* Primary bloom — breathes slowly */}
       <motion.div
         animate={
           reduced
@@ -42,7 +37,6 @@ export function CardBg({ theme, variant = 'default' }: Props) {
           zIndex: 0,
         }}
       />
-      {/* Secondary bloom — opposite corner, static */}
       <div
         style={{
           position: 'absolute',
@@ -58,7 +52,6 @@ export function CardBg({ theme, variant = 'default' }: Props) {
           zIndex: 0,
         }}
       />
-      {/* Grain texture overlay */}
       <div
         aria-hidden
         style={{

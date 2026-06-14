@@ -66,7 +66,7 @@ export function StoryViewer({ story }: Props) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <ProgressBar total={story.cards.length} current={current} theme={theme} />
+      <ProgressBar total={story.cards.length} current={current} />
 
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
