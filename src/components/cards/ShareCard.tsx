@@ -12,6 +12,17 @@ interface Props {
 const WHEEL_GRADIENT =
   'conic-gradient(hsl(0,100%,58%),hsl(30,100%,58%),hsl(60,100%,58%),hsl(90,100%,58%),hsl(120,100%,58%),hsl(150,100%,58%),hsl(180,100%,58%),hsl(210,100%,58%),hsl(240,100%,58%),hsl(270,100%,58%),hsl(300,100%,58%),hsl(330,100%,58%),hsl(360,100%,58%))'
 
+function hueToHex(hue: number): string {
+  const l = 0.58
+  const a = Math.min(l, 1 - l)
+  const f = (n: number) => {
+    const k = (n + hue / 30) % 12
+    const c = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+    return Math.round(255 * c).toString(16).padStart(2, '0')
+  }
+  return `#${f(0)}${f(8)}${f(4)}`
+}
+
 export function ShareCard({ data }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const wheelRef = useRef<HTMLDivElement>(null)
@@ -50,7 +61,7 @@ export function ShareCard({ data }: Props) {
       const angle = Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI)
       // +90° aligns atan2 (0°=right) with conic-gradient start (0°=top=red)
       const hue = Math.round((angle + 90 + 360) % 360)
-      setAccent(`hsl(${hue}, 100%, 58%)`)
+      setAccent(hueToHex(hue))
     },
     [setAccent]
   )
