@@ -50,12 +50,12 @@ export function useNavigation(total: number): NavigationState {
     touchStartX.current = null
   }, [next, prev])
 
-  // Tapping left/right thirds navigates; tapping centre does nothing
+  // Left third goes back; right two-thirds goes forward
   const handleClick = useCallback((e: React.MouseEvent) => {
     const x = e.clientX
     const w = window.innerWidth
-    if (x > w * 0.6) next()
-    else if (x < w * 0.4) prev()
+    if (x < w * 0.33) prev()
+    else next()
   }, [next, prev])
 
   return {

@@ -1,12 +1,19 @@
-import { animate } from 'framer-motion'
+import { animate, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 export function useCountUp(target: number, delay = 350): number {
+  const prefersReduced = useReducedMotion()
   const [value, setValue] = useState(0)
 
   useEffect(() => {
     if (!Number.isFinite(target) || target < 0) {
       setValue(0)
+      return
+    }
+
+    // Skip animation when user prefers reduced motion
+    if (prefersReduced === true) {
+      setValue(target)
       return
     }
 
@@ -29,7 +36,7 @@ export function useCountUp(target: number, delay = 350): number {
       clearTimeout(timer)
       stopped = true
     }
-  }, [target, delay])
+  }, [target, delay, prefersReduced])
 
   return value
 }

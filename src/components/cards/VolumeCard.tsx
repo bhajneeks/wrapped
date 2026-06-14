@@ -1,18 +1,28 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { colors, accent, spring } from '../../tokens'
 import type { VolumeCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { useCountUp } from '../../hooks/useCountUp'
 import { formatNumber } from '../../utils/format'
+import { CardBg } from '../CardBg'
 
 interface Props {
   data: VolumeCardData
   theme: Theme
 }
 
+function heroFontSize(formatted: string): string {
+  const digits = formatted.replace(/[^0-9]/g, '').length
+  if (digits > 9) return 'clamp(36px, 9vw, 56px)'
+  if (digits > 6) return 'clamp(48px, 13vw, 76px)'
+  return 'clamp(64px, 18vw, 100px)'
+}
+
 export function VolumeCard({ data, theme }: Props) {
   const accentColor = accent(theme)
+  const reduced = useReducedMotion()
   const count = useCountUp(data.value)
+  const finalFormatted = formatNumber(data.value)
 
   return (
     <div
@@ -27,22 +37,25 @@ export function VolumeCard({ data, theme }: Props) {
         overflow: 'hidden',
       }}
     >
-      {/* Subtle background mark */}
+      <CardBg theme={theme} />
+
+      {/* Ghost watermark */}
       <div
         style={{
           position: 'absolute',
           bottom: '-10%',
           right: '-15%',
-          fontSize: 'clamp(180px, 50vw, 280px)',
+          fontSize: 'clamp(120px, 35vw, 200px)',
           fontWeight: 900,
           color: `${accentColor}07`,
           lineHeight: 1,
           pointerEvents: 'none',
           letterSpacing: '-0.05em',
           userSelect: 'none',
+          fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {formatNumber(data.value)}
+        {finalFormatted}
       </div>
 
       <motion.div
@@ -55,6 +68,7 @@ export function VolumeCard({ data, theme }: Props) {
           letterSpacing: '0.25em',
           textTransform: 'uppercase',
           marginBottom: 20,
+          position: 'relative',
         }}
       >
         {data.label}
@@ -63,27 +77,28 @@ export function VolumeCard({ data, theme }: Props) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
+        transition={{ delay: 0.2, duration: reduced ? 0.1 : 0.3 }}
         style={{
-          fontSize: 'clamp(64px, 18vw, 100px)',
-          fontWeight: 800,
+          fontSize: heroFontSize(finalFormatted),
+          fontWeight: 900,
           lineHeight: 1,
           color: accentColor,
           fontVariantNumeric: 'tabular-nums',
           letterSpacing: '-0.03em',
           marginBottom: 28,
+          position: 'relative',
         }}
       >
         {formatNumber(count)}
       </motion.div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, position: 'relative' }}>
         {data.context.map((line, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={spring.stagger(i + 2)}
+            transition={reduced ? { duration: 0.1 } : spring.stagger(i + 2)}
             style={{
               color: i === 0 ? colors.textSecondary : colors.textMuted,
               fontSize: i === 0 ? 18 : 13,
@@ -93,6 +108,27 @@ export function VolumeCard({ data, theme }: Props) {
             {line}
           </motion.div>
         ))}
+
+        {data.comparison && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reduced ? { duration: 0.1 } : { delay: 0.9, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              marginTop: 12,
+              padding: '12px 16px',
+              background: `${accentColor}12`,
+              border: `1px solid ${accentColor}28`,
+              borderRadius: 12,
+              color: accentColor,
+              fontSize: 13,
+              fontWeight: 500,
+              lineHeight: 1.5,
+            }}
+          >
+            {data.comparison}
+          </motion.div>
+        )}
       </div>
     </div>
   )
