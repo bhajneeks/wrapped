@@ -204,13 +204,13 @@ export function ShareCard({ data }: Props) {
                   background: 'rgba(0,0,0,0.45)',
                   border: `1px solid ${ac}14`,
                   borderRadius: 12,
-                  padding: '10px 12px',
+                  padding: '10px 9px',
                 }}
               >
                 <div
                   style={{
                     color: colors.textPrimary,
-                    fontSize: 15,
+                    fontSize: stat.value.length > 9 ? 11 : stat.value.length > 5 ? 13 : 15,
                     fontWeight: 700,
                     marginBottom: 3,
                     letterSpacing: '-0.01em',

@@ -1,0 +1,22 @@
+{
+  "kind": "commits",
+  "userName": "",
+  "year": 2026,
+  "totalCommits": 0,
+  "totalRepos": 1,
+  "totalLinesAdded": 999999999,
+  "totalLinesDeleted": 0,
+  "languages": [],
+  "monthlyCommits": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "dayOfWeekCommits": [],
+  "longestStreakDays": 0,
+  "longestStreakStart": "",
+  "topRepos": [
+    {
+      "name": "a-repo-with-an-extremely-long-name-that-goes-on-and-on",
+      "commits": 0,
+      "lines": 0
+    }
+  ],
+  "funFacts": []
+}
