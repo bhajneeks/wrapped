@@ -20,6 +20,7 @@ export interface VolumeCardData {
   label: string
   value: number
   context: string[]
+  comparison: string
 }
 
 export interface TopItemCardData {
@@ -51,6 +52,9 @@ export interface ShareCardData {
   year: number
   theme: Theme
   title: string
+  heroLabel: string
+  heroValue: string
+  heroSub: string
   stats: Array<{ label: string; value: string }>
 }
 
