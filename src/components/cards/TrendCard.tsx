@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { colors, accent, spring } from '../../tokens'
 import type { TrendCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
+import { CardBg } from '../CardBg'
 
 interface Props {
   data: TrendCardData
@@ -28,19 +29,7 @@ export function TrendCard({ data, theme }: Props) {
         position: 'relative',
       }}
     >
-      {/* Background accent glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-20%', left: '50%',
-          transform: 'translateX(-50%)',
-          width: '80vw', height: '80vw',
-          maxWidth: 400, maxHeight: 400,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${accentColor}12 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }}
-      />
+      <CardBg theme={theme} />
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}

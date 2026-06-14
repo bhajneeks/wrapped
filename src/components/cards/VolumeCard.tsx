@@ -4,6 +4,7 @@ import type { VolumeCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
 import { useCountUp } from '../../hooks/useCountUp'
 import { formatNumber } from '../../utils/format'
+import { CardBg } from '../CardBg'
 
 interface Props {
   data: VolumeCardData
@@ -36,19 +37,7 @@ export function VolumeCard({ data, theme }: Props) {
         overflow: 'hidden',
       }}
     >
-      {/* Background glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-10%', left: '50%',
-          transform: 'translateX(-50%)',
-          width: '90vw', height: '90vw',
-          maxWidth: 440, maxHeight: 440,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${accentColor}14 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }}
-      />
+      <CardBg theme={theme} />
 
       {/* Ghost watermark */}
       <div

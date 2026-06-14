@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { colors, accent, spring } from '../../tokens'
 import type { TopItemCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
+import { CardBg } from '../CardBg'
 
 interface Props {
   data: TopItemCardData
@@ -35,18 +36,7 @@ export function TopItemCard({ data, theme }: Props) {
         position: 'relative',
       }}
     >
-      {/* Background glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-20%', right: '-20%',
-          width: '80vw', height: '80vw',
-          maxWidth: 360, maxHeight: 360,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${accentColor}10 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }}
-      />
+      <CardBg theme={theme} />
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}

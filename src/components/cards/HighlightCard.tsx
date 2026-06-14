@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { colors, accent, spring } from '../../tokens'
 import type { HighlightCardData } from '../../adapter/types'
 import type { Theme } from '../../tokens'
+import { CardBg } from '../CardBg'
 
 interface Props {
   data: HighlightCardData
@@ -10,6 +11,7 @@ interface Props {
 
 export function HighlightCard({ data, theme }: Props) {
   const accentColor = accent(theme)
+  const reduced = useReducedMotion()
 
   return (
     <div
@@ -24,54 +26,65 @@ export function HighlightCard({ data, theme }: Props) {
         overflow: 'hidden',
       }}
     >
-      {/* Large decorative background letter */}
-      <div
+      <CardBg theme={theme} />
+
+      {/* Large decorative star watermark */}
+      <motion.div
+        animate={reduced ? {} : { rotate: [0, 6, -6, 0], scale: [1, 1.04, 1] }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          fontSize: '70vw',
+          fontSize: '65vw',
           fontWeight: 900,
-          color: `${accentColor}06`,
+          color: `${accentColor}07`,
           lineHeight: 1,
           pointerEvents: 'none',
           userSelect: 'none',
           whiteSpace: 'nowrap',
+          zIndex: 0,
         }}
       >
         ★
-      </div>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={spring.stagger(0)}
+        transition={reduced ? { duration: 0.1 } : spring.stagger(0)}
         style={{
           color: colors.textMuted,
           fontSize: 11,
           letterSpacing: '0.25em',
           textTransform: 'uppercase',
           marginBottom: 24,
-          zIndex: 1,
+          zIndex: 2,
+          position: 'relative',
         }}
       >
         {data.headline}
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={spring.stagger(1)}
+        initial={{ opacity: 0, y: 32, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={
+          reduced
+            ? { duration: 0.1 }
+            : { delay: 0.15, type: 'spring', stiffness: 300, damping: 22 }
+        }
         style={{
           color: accentColor,
           fontSize: 'clamp(44px, 13vw, 68px)',
-          fontWeight: 800,
+          fontWeight: 900,
           lineHeight: 1.05,
-          letterSpacing: '-0.02em',
+          letterSpacing: '-0.025em',
           marginBottom: 16,
           wordBreak: 'break-word',
-          zIndex: 1,
+          zIndex: 2,
+          position: 'relative',
         }}
       >
         {data.mainText}
@@ -81,13 +94,14 @@ export function HighlightCard({ data, theme }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={spring.stagger(2)}
+          transition={reduced ? { duration: 0.1 } : spring.stagger(2)}
           style={{
             color: colors.textSecondary,
             fontSize: 17,
             fontWeight: 400,
             marginBottom: 40,
-            zIndex: 1,
+            zIndex: 2,
+            position: 'relative',
           }}
         >
           {data.subText}
@@ -98,16 +112,17 @@ export function HighlightCard({ data, theme }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={spring.stagger(3)}
+          transition={reduced ? { duration: 0.1 } : spring.stagger(3)}
           style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: `1px solid rgba(255,255,255,0.09)`,
+            background: `${accentColor}0C`,
+            border: `1px solid ${accentColor}22`,
             borderRadius: 14,
             padding: '16px 20px',
             color: colors.textSecondary,
             fontSize: 14,
-            lineHeight: 1.5,
-            zIndex: 1,
+            lineHeight: 1.55,
+            zIndex: 2,
+            position: 'relative',
           }}
         >
           {data.funFact}

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { colors } from '../tokens'
 import type { NormalizedStory, CardData } from '../adapter/types'
 import type { Theme } from '../tokens'
@@ -11,32 +11,14 @@ import { TrendCard } from './cards/TrendCard'
 import { HighlightCard } from './cards/HighlightCard'
 import { ShareCard } from './cards/ShareCard'
 
-const cardVariants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? '55%' : '-55%',
-    opacity: 0,
-    scale: 0.93,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (dir: number) => ({
-    x: dir < 0 ? '55%' : '-55%',
-    opacity: 0,
-    scale: 0.93,
-  }),
-}
-
 function renderCard(card: CardData, theme: Theme) {
   switch (card.type) {
-    case 'welcome': return <WelcomeCard data={card} />
-    case 'volume': return <VolumeCard data={card} theme={theme} />
-    case 'topItem': return <TopItemCard data={card} theme={theme} />
-    case 'trend': return <TrendCard data={card} theme={theme} />
+    case 'welcome':   return <WelcomeCard data={card} />
+    case 'volume':    return <VolumeCard data={card} theme={theme} />
+    case 'topItem':   return <TopItemCard data={card} theme={theme} />
+    case 'trend':     return <TrendCard data={card} theme={theme} />
     case 'highlight': return <HighlightCard data={card} theme={theme} />
-    case 'share': return <ShareCard data={card} />
+    case 'share':     return <ShareCard data={card} />
   }
 }
 
@@ -45,6 +27,24 @@ interface Props {
 }
 
 export function StoryViewer({ story }: Props) {
+  const prefersReduced = useReducedMotion()
+
+  const fullVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? '55%' : '-55%', opacity: 0, scale: 0.93 }),
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit: (dir: number) => ({ x: dir < 0 ? '55%' : '-55%', opacity: 0, scale: 0.93 }),
+  }
+  const reducedVariants = {
+    enter: { opacity: 0 },
+    center: { opacity: 1 },
+    exit: { opacity: 0 },
+  }
+  const cardVariants = prefersReduced ? reducedVariants : fullVariants
+
+  const cardTransition = prefersReduced
+    ? { duration: 0.18 }
+    : { type: 'spring' as const, stiffness: 300, damping: 30 }
+
   const { current, direction, isFirst, isLast, handleTouchStart, handleTouchEnd, handleClick } =
     useNavigation(story.cards.length)
 
@@ -76,14 +76,14 @@ export function StoryViewer({ story }: Props) {
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={cardTransition}
           style={{ position: 'absolute', inset: 0 }}
         >
           {renderCard(card, theme)}
         </motion.div>
       </AnimatePresence>
 
-      {/* Edge tap hints — subtle arrows visible on desktop */}
+      {/* Subtle edge tap hints — desktop only */}
       {!isFirst && (
         <div
           style={{
@@ -91,8 +91,8 @@ export function StoryViewer({ story }: Props) {
             left: 12,
             top: '50%',
             transform: 'translateY(-50%)',
-            color: 'rgba(255,255,255,0.2)',
-            fontSize: 24,
+            color: 'rgba(255,255,255,0.18)',
+            fontSize: 22,
             pointerEvents: 'none',
           }}
         >
@@ -106,8 +106,8 @@ export function StoryViewer({ story }: Props) {
             right: 12,
             top: '50%',
             transform: 'translateY(-50%)',
-            color: 'rgba(255,255,255,0.2)',
-            fontSize: 24,
+            color: 'rgba(255,255,255,0.18)',
+            fontSize: 22,
             pointerEvents: 'none',
           }}
         >
