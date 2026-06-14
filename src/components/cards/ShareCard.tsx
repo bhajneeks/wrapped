@@ -9,6 +9,9 @@ interface Props {
   data: ShareCardData
 }
 
+const WHEEL_GRADIENT =
+  'conic-gradient(hsl(0,100%,58%),hsl(30,100%,58%),hsl(60,100%,58%),hsl(90,100%,58%),hsl(120,100%,58%),hsl(150,100%,58%),hsl(180,100%,58%),hsl(210,100%,58%),hsl(240,100%,58%),hsl(270,100%,58%),hsl(300,100%,58%),hsl(330,100%,58%),hsl(360,100%,58%))'
+
 export function ShareCard({ data }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const wheelRef = useRef<HTMLDivElement>(null)
@@ -41,8 +44,11 @@ export function ShareCard({ data }: Props) {
       const rect = wheelRef.current.getBoundingClientRect()
       const cx = rect.left + rect.width / 2
       const cy = rect.top + rect.height / 2
+      // Ignore clicks inside the center hole (radius < 30% of wheel)
+      const dist = Math.hypot(clientX - cx, clientY - cy)
+      if (dist < rect.width * 0.28) return
       const angle = Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI)
-      // +90 aligns atan2 (0° = right) with conic-gradient (0° = top)
+      // +90° aligns atan2 (0°=right) with conic-gradient start (0°=top=red)
       const hue = Math.round((angle + 90 + 360) % 360)
       setAccent(`hsl(${hue}, 100%, 58%)`)
     },
@@ -76,7 +82,7 @@ export function ShareCard({ data }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '0 20px',
-        gap: 18,
+        gap: 16,
         overflow: 'hidden',
       }}
     >
@@ -93,38 +99,10 @@ export function ShareCard({ data }: Props) {
           borderRadius: 28,
           overflow: 'hidden',
           position: 'relative',
-          border: `1px solid ${ac}30`,
+          // border driven by motion below
+          border: `1.5px solid ${ac}55`,
         }}
       >
-        {/* Background blooms */}
-        <div
-          style={{
-            position: 'absolute',
-            top: -100, left: -80,
-            width: 340, height: 340,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${ac}2A 0%, ${ac}0A 45%, transparent 70%)`,
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -60, right: -60,
-            width: 220, height: 220,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${ac}18 0%, transparent 65%)`,
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: `linear-gradient(135deg, ${ac}08 0%, transparent 50%)`,
-            pointerEvents: 'none',
-          }}
-        />
 
         {/* Content */}
         <div style={{ padding: '28px 26px 26px', position: 'relative', zIndex: 1 }}>
@@ -151,8 +129,8 @@ export function ShareCard({ data }: Props) {
             <div
               style={{
                 padding: '4px 10px',
-                background: `${ac}15`,
-                border: `1px solid ${ac}35`,
+                background: `${ac}22`,
+                border: `1px solid ${ac}55`,
                 borderRadius: 20,
                 color: ac,
                 fontSize: 9,
@@ -220,7 +198,7 @@ export function ShareCard({ data }: Props) {
           <div
             style={{
               height: 1,
-              background: `linear-gradient(to right, ${ac}30, transparent)`,
+              background: `linear-gradient(to right, ${ac}55, transparent)`,
               marginBottom: 20,
             }}
           />
@@ -234,7 +212,7 @@ export function ShareCard({ data }: Props) {
                   flex: '1 1 0',
                   minWidth: 0,
                   background: 'rgba(0,0,0,0.45)',
-                  border: `1px solid ${ac}14`,
+                  border: `1px solid ${ac}22`,
                   borderRadius: 12,
                   padding: '10px 9px',
                 }}
@@ -272,7 +250,7 @@ export function ShareCard({ data }: Props) {
             style={{
               marginTop: 22,
               textAlign: 'center',
-              color: `${ac}55`,
+              color: `${ac}80`,
               fontSize: 9,
               letterSpacing: '0.32em',
               textTransform: 'uppercase',
@@ -285,16 +263,16 @@ export function ShareCard({ data }: Props) {
 
       {/* ——— Color picker — outside the captured region ——— */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
+        transition={{ delay: 0.25, duration: 0.5 }}
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 14,
+          gap: 16,
         }}
       >
-        <div
+        <span
           style={{
             color: colors.textMuted,
             fontSize: 10,
@@ -303,35 +281,50 @@ export function ShareCard({ data }: Props) {
           }}
         >
           Color
-        </div>
+        </span>
 
-        {/* Color wheel — conic gradient circle */}
+        {/* Donut color wheel */}
         <div
           ref={wheelRef}
           onClick={handleWheelClick}
           onTouchEnd={handleWheelTouch}
           style={{
-            width: 40,
-            height: 40,
+            width: 52,
+            height: 52,
             borderRadius: '50%',
-            background:
-              'conic-gradient(hsl(0,100%,58%), hsl(30,100%,58%), hsl(60,100%,58%), hsl(90,100%,58%), hsl(120,100%,58%), hsl(150,100%,58%), hsl(180,100%,58%), hsl(210,100%,58%), hsl(240,100%,58%), hsl(270,100%,58%), hsl(300,100%,58%), hsl(330,100%,58%), hsl(360,100%,58%))',
-            cursor: 'pointer',
-            border: '2px solid rgba(255,255,255,0.18)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
+            background: WHEEL_GRADIENT,
+            cursor: 'crosshair',
+            boxShadow: '0 0 0 1.5px rgba(255,255,255,0.15), 0 4px 16px rgba(0,0,0,0.6)',
             flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
+        >
+          {/* Center hole — makes it look like a ring / pinwheel */}
+          <div
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: '50%',
+              background: colors.bg,
+              border: '1.5px solid rgba(255,255,255,0.12)',
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
 
-        {/* Current color preview dot */}
+        {/* Live color swatch */}
         <motion.div
-          animate={{ background: ac, boxShadow: `0 0 14px ${ac}70` }}
-          transition={{ duration: 0.2 }}
+          animate={{
+            background: ac,
+            boxShadow: `0 0 0 2px rgba(255,255,255,0.2), 0 0 18px ${ac}80`,
+          }}
+          transition={{ duration: 0.25 }}
           style={{
-            width: 24,
-            height: 24,
+            width: 30,
+            height: 30,
             borderRadius: '50%',
-            border: '2px solid rgba(255,255,255,0.25)',
             flexShrink: 0,
           }}
         />
@@ -355,8 +348,8 @@ export function ShareCard({ data }: Props) {
           cursor: 'pointer',
           letterSpacing: '0.05em',
           fontFamily: 'inherit',
-          boxShadow: `0 4px 24px ${ac}40`,
-          transition: 'background 0.2s, box-shadow 0.2s',
+          boxShadow: `0 4px 24px ${ac}50`,
+          transition: 'background 0.25s, box-shadow 0.25s',
         }}
       >
         Download Card
