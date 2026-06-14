@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { toPng } from 'html-to-image'
 import { colors, accent } from '../../tokens'
 import type { ShareCardData } from '../../adapter/types'
-import { spring } from '../../tokens'
 
 interface Props {
   data: ShareCardData
@@ -11,7 +10,7 @@ interface Props {
 
 export function ShareCard({ data }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const accentColor = accent(data.theme)
+  const ac = accent(data.theme)
 
   const handleDownload = useCallback(
     async (e: React.MouseEvent) => {
@@ -20,7 +19,7 @@ export function ShareCard({ data }: Props) {
       try {
         const dataUrl = await toPng(cardRef.current, {
           pixelRatio: 2,
-          backgroundColor: colors.surface,
+          backgroundColor: '#0A0A14',
         })
         const a = document.createElement('a')
         a.download = `${data.userName}-${data.year}-wrapped.png`
@@ -42,147 +41,213 @@ export function ShareCard({ data }: Props) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '0 24px',
-        gap: 28,
+        padding: '0 20px',
+        gap: 22,
+        overflow: 'hidden',
       }}
     >
-      {/* ——— The shareable card ——— */}
+      {/* ——— The poster card — captured by toPng ——— */}
       <motion.div
         ref={cardRef}
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         style={{
           width: '100%',
-          maxWidth: 320,
-          borderRadius: 24,
-          padding: '36px 28px 32px',
-          background: colors.surface,
-          border: `1px solid ${accentColor}30`,
-          position: 'relative',
+          maxWidth: 340,
+          background: '#0A0A14',
+          borderRadius: 28,
           overflow: 'hidden',
+          position: 'relative',
+          border: `1px solid ${ac}30`,
         }}
       >
-        {/* Corner glow */}
+        {/* Background — large radial bloom top-left */}
         <div
           style={{
             position: 'absolute',
-            top: -60,
-            right: -60,
-            width: 200,
-            height: 200,
+            top: -100, left: -80,
+            width: 340, height: 340,
             borderRadius: '50%',
-            background: `radial-gradient(circle, ${accentColor}30 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${ac}2A 0%, ${ac}0A 45%, transparent 70%)`,
             pointerEvents: 'none',
           }}
         />
+        {/* Secondary bloom bottom-right */}
         <div
           style={{
             position: 'absolute',
-            bottom: -40,
-            left: -40,
-            width: 140,
-            height: 140,
+            bottom: -60, right: -60,
+            width: 220, height: 220,
             borderRadius: '50%',
-            background: `radial-gradient(circle, ${accentColor}18 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${ac}18 0%, transparent 65%)`,
+            pointerEvents: 'none',
+          }}
+        />
+        {/* Thin diagonal highlight line */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: `linear-gradient(135deg, ${ac}08 0%, transparent 50%)`,
             pointerEvents: 'none',
           }}
         />
 
-        {/* Year badge */}
-        <div
-          style={{
-            color: colors.textMuted,
-            fontSize: 10,
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            marginBottom: 20,
-          }}
-        >
-          {data.year} · Wrapped
-        </div>
+        {/* Content */}
+        <div style={{ padding: '28px 26px 26px', position: 'relative', zIndex: 1 }}>
 
-        {/* Name + title */}
-        <div
-          style={{
-            color: accentColor,
-            fontSize: 34,
-            fontWeight: 800,
-            lineHeight: 1,
-            marginBottom: 6,
-            letterSpacing: '-0.02em',
-            wordBreak: 'break-word',
-          }}
-        >
-          {data.userName}
-        </div>
-        <div
-          style={{
-            color: colors.textSecondary,
-            fontSize: 16,
-            fontWeight: 500,
-            marginBottom: 32,
-          }}
-        >
-          {data.title}
-        </div>
-
-        {/* Stats grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 12,
-          }}
-        >
-          {data.stats.map(stat => (
+          {/* Header row — year on left, theme badge on right */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 36,
+            }}
+          >
             <div
-              key={stat.label}
               style={{
-                background: 'rgba(0,0,0,0.35)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                borderRadius: 12,
-                padding: '14px 12px',
+                color: colors.textMuted,
+                fontSize: 10,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
               }}
             >
-              <div
-                style={{
-                  color: accentColor,
-                  fontSize: 20,
-                  fontWeight: 700,
-                  marginBottom: 4,
-                  letterSpacing: '-0.01em',
-                  fontVariantNumeric: 'tabular-nums',
-                }}
-              >
-                {stat.value}
-              </div>
-              <div
-                style={{
-                  color: colors.textMuted,
-                  fontSize: 10,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {stat.label}
-              </div>
+              {data.year}
             </div>
-          ))}
-        </div>
+            <div
+              style={{
+                padding: '4px 10px',
+                background: `${ac}15`,
+                border: `1px solid ${ac}35`,
+                borderRadius: 20,
+                color: ac,
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {data.theme === 'commits' ? 'Code' : 'Music'}
+            </div>
+          </div>
 
-        {/* Wordmark */}
-        <div
-          style={{
-            marginTop: 28,
-            color: colors.textMuted,
-            fontSize: 10,
-            textAlign: 'center',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-          }}
-        >
-          ✦ wrapped ✦
+          {/* User name */}
+          <div
+            style={{
+              color: ac,
+              fontSize: 'clamp(26px, 7.5vw, 40px)',
+              fontWeight: 900,
+              lineHeight: 1,
+              letterSpacing: '-0.03em',
+              marginBottom: 24,
+              wordBreak: 'break-word',
+            }}
+          >
+            {data.userName}
+          </div>
+
+          {/* Hero number */}
+          <div
+            style={{
+              color: colors.textPrimary,
+              fontSize: 'clamp(48px, 13vw, 68px)',
+              fontWeight: 900,
+              lineHeight: 0.9,
+              letterSpacing: '-0.04em',
+              fontVariantNumeric: 'tabular-nums',
+              marginBottom: 8,
+              wordBreak: 'break-all',
+            }}
+          >
+            {data.heroValue}
+          </div>
+          <div
+            style={{
+              color: colors.textMuted,
+              fontSize: 10,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              marginBottom: 4,
+            }}
+          >
+            {data.heroLabel}
+          </div>
+          <div
+            style={{
+              color: colors.textSecondary,
+              fontSize: 13,
+              marginBottom: 28,
+            }}
+          >
+            {data.heroSub}
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              height: 1,
+              background: `linear-gradient(to right, ${ac}30, transparent)`,
+              marginBottom: 20,
+            }}
+          />
+
+          {/* Supporting stats pills */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {data.stats.map(stat => (
+              <div
+                key={stat.label}
+                style={{
+                  flex: '1 1 0',
+                  minWidth: 0,
+                  background: 'rgba(0,0,0,0.45)',
+                  border: `1px solid ${ac}14`,
+                  borderRadius: 12,
+                  padding: '10px 12px',
+                }}
+              >
+                <div
+                  style={{
+                    color: colors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    marginBottom: 3,
+                    letterSpacing: '-0.01em',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {stat.value}
+                </div>
+                <div
+                  style={{
+                    color: colors.textMuted,
+                    fontSize: 9,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                  }}
+                >
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Wordmark footer */}
+          <div
+            style={{
+              marginTop: 22,
+              textAlign: 'center',
+              color: `${ac}55`,
+              fontSize: 9,
+              letterSpacing: '0.32em',
+              textTransform: 'uppercase',
+            }}
+          >
+            ✦ wrapped ✦
+          </div>
         </div>
       </motion.div>
 
@@ -190,20 +255,21 @@ export function ShareCard({ data }: Props) {
       <motion.button
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={spring.stagger(2)}
+        transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         onClick={handleDownload}
         whileTap={{ scale: 0.94 }}
         style={{
-          padding: '14px 36px',
-          background: accentColor,
+          padding: '14px 42px',
+          background: ac,
           color: '#000',
           border: 'none',
           borderRadius: 50,
           fontSize: 14,
           fontWeight: 700,
           cursor: 'pointer',
-          letterSpacing: '0.04em',
+          letterSpacing: '0.05em',
           fontFamily: 'inherit',
+          boxShadow: `0 4px 24px ${ac}40`,
         }}
       >
         Download Card
