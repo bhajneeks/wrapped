@@ -112,6 +112,7 @@ export function ShareCard({ data }: Props) {
           position: 'relative',
           // border driven by motion below
           border: `1.5px solid ${ac}55`,
+          boxShadow: `0 0 60px ${ac}30, 0 0 120px ${ac}18`,
         }}
       >
 
