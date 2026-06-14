@@ -1,18 +1,18 @@
-// App.tsx, your entrypoint. Replace this with your story.
-//
-// The two datasets are available at:
-//   import commits from "../data/year_commits.json"
-//   import listening from "../data/year_listening.json"
-//
-// Pick one to start; your final app must work with either shape.
+import commitsData from '../data/year_commits.json'
+import listeningData from '../data/year_listening.json'
+import type { Dataset } from '../types'
+import { normalize } from './adapter/normalize'
+import { StoryViewer } from './components/StoryViewer'
+
+// The grader swaps in a fresh dataset of the same shape.
+// Use ?dataset=listening or ?dataset=commits (default) to select.
+function getDataset(): Dataset {
+  const param = new URLSearchParams(window.location.search).get('dataset')
+  if (param === 'listening') return listeningData as Dataset
+  return commitsData as Dataset
+}
 
 export default function App() {
-  return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", fontFamily: "system-ui, sans-serif", color: "#1a1a1a" }}>
-      <div style={{ textAlign: "center", padding: 24 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Edit src/App.tsx to start.</div>
-        <div style={{ fontSize: 14, color: "#666" }}>Datasets are in <code>data/</code>. Read README.md for the brief.</div>
-      </div>
-    </div>
-  )
+  const story = normalize(getDataset())
+  return <StoryViewer story={story} />
 }

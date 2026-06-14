@@ -2,68 +2,116 @@
 
 *A mobile-first year-in-review story experience.*
 
-## Overview
+## What It Does
 
-The most-shared piece of product marketing of the last decade is probably Spotify Wrapped. GitHub did Skyline. Strava does Year in Sport. Apple does Year in Review. They all share a shape: take a year of someone's data, turn it into a sequence of designed story cards with motion, count-ups, and a memorable closing share image. The reason this format works is that the math is the user's own life and the design respects them. The reason most clones fall flat is that they look like dashboards in disguise.
+Wrapped takes a year of user activity (GitHub-style commits **or** music listening) and renders it as a Spotify-Wrapped-style interactive story: a sequence of full-screen cards revealed progressively, with animated count-ups, animated charts, designed transitions, and a downloadable share card at the end.
 
-You're going to build one. Given a year of data, build a multi-screen story that reveals the user's year progressively, with motion that earns its keep and a closing share card someone might actually want to post. Mobile-shaped, Wrapped is a phone experience, not a desktop one.
+## Setup & Running
 
-## Problem Statement
-
-Build a mobile-first single-page web app that takes a JSON dataset (one year of user activity, provided) and renders an interactive Wrapped-style story experience. Multiple designed cards, motion between and within them, count-ups on numbers, surprising data treatments, and a downloadable share card at the end.
-
-## Getting Started
-
-### Prerequisites
-- Node.js 20+
-- Any modern frontend stack you're comfortable with (Vite + React, Next.js, SvelteKit, etc.). Starter is Vite + React + Framer Motion.
-
-### Setup
-Dependencies are installed automatically when you initialize the assessment with the Litmus CLI. You're ready to start coding.
-
-What's in the workspace:
-- `data/year_commits.json`, one year of GitHub-like commit data for a user. Has repos, commits, languages, day-of-week patterns, longest streak.
-- `data/year_listening.json`, one year of listening history. Top artists, genres, total minutes, monthly breakdown.
-- Pick one dataset. The grader will swap in a fresh dataset of the same shape; your story must work on either.
-- `types.ts`, the dataset types.
-
-## Requirements
-
-1. The app shows a series of story cards. Minimum five. The cards reveal stats from the dataset progressively. Examples of what each card could be (you decide the cuts): total volume, top item, a trend over the year, a fun fact, a closing share card.
-2. Navigation between cards. Forward and back, by tap/click or keyboard. Auto-advance is optional (if you build it, make it overridable).
-3. Motion is required. Numbers count up. Charts animate in. Card transitions are designed (not jump-cuts). A static-screens version is a failure case.
-4. Mobile-shaped. The app must look correct on iPhone SE width (375px) and modern mobile widths (390px, 414px). Desktop is fine but not the target.
-5. The final card is a designed share card. The user can download it as an image (PNG / JPEG). The share card should be visually distinct and worth sharing, not just a screenshot of the totals page.
-6. Cohesive visual identity. The cards share a palette, type system, and motion language. Inconsistency across cards is a failure case.
-7. The story must work on either provided dataset (commits or listening). Don't hard-code to one, the data shapes are different, but the framework you build should handle both.
-
-## Examples
-
-**Example 1: Five cards from year_commits.json**
-```
-Card 1: "You shipped X commits across Y repos this year."  (counts-up)
-Card 2: "Your top language was TypeScript. Here's the breakdown." (animated bar/pie reveal)
-Card 3: "You committed on N% of weekdays. Here's your week-shape." (heatmap or histogram)
-Card 4: "Your longest streak was K days, in March."  (highlight card, designed)
-Card 5: Share card, "{Name}'s Year in Code, 2026", downloadable.
+```bash
+npm install     # dependencies are pre-installed by the Litmus CLI
+npm run dev     # starts Vite dev server at http://localhost:5173
 ```
 
-**Example 2: Five cards from year_listening.json**
+### Switching datasets
+
+The app defaults to the commits dataset. Add a query param to switch:
+
 ```
-Card 1: "You listened to X hours this year. That's enough to ..."
-Card 2: "Your top artist was Y. You played them Z times."
-Card 3: "Genre breakdown, animated treemap or stacked bar."
-Card 4: "Your most-replayed track."
-Card 5: Share card, downloadable.
+http://localhost:5173/?dataset=commits    # default
+http://localhost:5173/?dataset=listening  # music listening
 ```
 
-## Submission Guidelines
+Both datasets produce a six-card story. The adapter layer auto-detects which shape was provided.
 
-### What to Submit
-- All source code (frontend, any backend helpers, build config).
-- The components for each story card. The grader inspects the structure to verify ~5+ designed cards exist.
+## Architecture
 
-### How to Submit
+```
+src/
+  adapter/
+    types.ts        # NormalizedStory + per-card data interfaces
+    normalize.ts    # Maps CommitsDataset | ListeningDataset → NormalizedStory
+  components/
+    StoryViewer.tsx # AnimatePresence container; routes cards; handles nav events
+    ProgressBar.tsx # Segmented top progress indicator
+    cards/
+      WelcomeCard.tsx    # Card 1 — name, year, tagline
+      VolumeCard.tsx     # Card 2 — animated count-up of the headline number
+      TopItemCard.tsx    # Card 3 — top language / top artist + animated bars
+      TrendCard.tsx      # Card 4 — monthly activity bar chart
+      HighlightCard.tsx  # Card 5 — streak / most-replayed track + fun fact
+      ShareCard.tsx      # Card 6 — designed share card + PNG download
+  hooks/
+    useCountUp.ts     # Animates a number from 0 to target (Framer Motion animate)
+    useNavigation.ts  # Keyboard (←/→/Space), swipe, and tap-zone navigation
+  utils/
+    format.ts         # formatNumber, clamp
+  tokens.ts           # Design tokens: palette, font stack, theme helpers, spring presets
+  App.tsx             # Loads dataset, runs normalize(), renders StoryViewer
+```
+
+### Adapter / normalization layer
+
+`normalize()` in `src/adapter/normalize.ts` is the entry point. It inspects `data.kind` and dispatches to `normalizeCommits` or `normalizeListening`. Both functions return an identical `NormalizedStory` shape:
+
+```ts
+interface NormalizedStory {
+  meta: { userName: string; year: number; theme: 'commits' | 'listening' }
+  cards: CardData[]  // always 6 cards in the same slot order
+}
+```
+
+Every card component receives a typed slice of that model — no card ever imports a raw dataset type. This means swapping in a fresh dataset only requires replacing the JSON file; no card code changes.
+
+**Defensive handling:** all field accesses use `?? fallback` so missing or null fields never crash the render. Arrays are guarded with `.slice()` on a default empty array. Numbers are validated with `Number.isFinite` before animating.
+
+### Visual identity
+
+| Token | Value |
+|---|---|
+| Background | `#08080F` |
+| Surface | `#13131E` |
+| Accent — commits | `#39FF14` (electric lime) |
+| Accent — listening | `#FF2D78` (hot pink) |
+| Primary text | `#FFFFFF` |
+| Secondary text | `rgba(255,255,255,0.6)` |
+| Font | Inter (700/800/900 weights) |
+
+All cards share the same background, font, and accent colour. The accent colour is derived from the theme (`accent(theme)` in `tokens.ts`), so every element of the commits story is lime and every element of the listening story is pink — automatically.
+
+### Motion language
+
+- **Card transitions** — `AnimatePresence` in `wait` mode with a spring slide (x ± 55%, opacity, scale 0.93 → 1).
+- **Number count-up** — `animate(0, target, { duration: 1.8, ease: [0.16, 1, 0.3, 1] })` from Framer Motion, updating React state via `onUpdate`.
+- **Bar charts** — `motion.div` width/height animated from 0 with staggered delays (`spring.bar(i)`).
+- **In-card elements** — staggered `opacity + y` entrance via `spring.stagger(i)`.
+
+### Share card download
+
+`ShareCard` holds a `ref` on the designed card `<div>`. On click, `html-to-image`'s `toPng` captures that div at 2× pixel ratio and triggers a browser download. The Download button is outside the captured div so it doesn't appear in the exported image.
+
+## Navigation
+
+| Input | Action |
+|---|---|
+| Tap right third of screen | Next card |
+| Tap left third of screen | Previous card |
+| Swipe left / right | Next / previous |
+| `→` or `Space` | Next card |
+| `←` or `Backspace` | Previous card |
+
+## Dependencies
+
+| Package | Purpose |
+|---|---|
+| `react` + `react-dom` | UI framework |
+| `framer-motion` | Card transitions, bar animations, count-up |
+| `html-to-image` | PNG export of the share card |
+| `vite` + `@vitejs/plugin-react` | Build tooling |
+| `typescript` | Type safety |
+
+## Submitting
+
 ```bash
 litmus submit
 ```
