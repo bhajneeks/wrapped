@@ -1,0 +1,116 @@
+{
+  "kind": "commits",
+  "userName": "Avery",
+  "year": 2026,
+  "totalCommits": 1842,
+  "totalRepos": 27,
+  "totalLinesAdded": 84120,
+  "totalLinesDeleted": 41280,
+  "languages": [
+    {
+      "name": "TypeScript",
+      "commits": 822,
+      "share": 0.446
+    },
+    {
+      "name": "Python",
+      "commits": 511,
+      "share": 0.277
+    },
+    {
+      "name": "Rust",
+      "commits": 184,
+      "share": 0.1
+    },
+    {
+      "name": "Go",
+      "commits": 142,
+      "share": 0.077
+    },
+    {
+      "name": "SQL",
+      "commits": 96,
+      "share": 0.052
+    },
+    {
+      "name": "Shell",
+      "commits": 47,
+      "share": 0.026
+    },
+    {
+      "name": "Other",
+      "commits": 40,
+      "share": 0.022
+    }
+  ],
+  "monthlyCommits": [
+    142,
+    168,
+    201,
+    134,
+    196,
+    222,
+    175,
+    88,
+    142,
+    178,
+    132,
+    64
+  ],
+  "dayOfWeekCommits": [
+    342,
+    388,
+    421,
+    356,
+    264,
+    36,
+    35
+  ],
+  "longestStreakDays": 47,
+  "longestStreakStart": "2026-02-12",
+  "topRepos": [
+    {
+      "name": "litmus-monorepo",
+      "commits": 612,
+      "lines": 32400
+    },
+    {
+      "name": "agent-lab",
+      "commits": 318,
+      "lines": 18200
+    },
+    {
+      "name": "scratch-2026",
+      "commits": 264,
+      "lines": 14800
+    },
+    {
+      "name": "neo-arena",
+      "commits": 184,
+      "lines": 9600
+    },
+    {
+      "name": "claude-extensions",
+      "commits": 142,
+      "lines": 5400
+    }
+  ],
+  "funFacts": [
+    {
+      "kind": "longest_day",
+      "text": "Your longest coding day was 38 commits, on March 14 (Pi Day)."
+    },
+    {
+      "kind": "ratio",
+      "text": "You added 2 lines for every line you deleted."
+    },
+    {
+      "kind": "weekend_warrior",
+      "text": "You committed on 71 weekend days. Take a weekend off, Avery."
+    },
+    {
+      "kind": "small_pr",
+      "text": "Your median PR was 47 lines. Tight."
+    }
+  ]
+}

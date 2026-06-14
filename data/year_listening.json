@@ -1,0 +1,125 @@
+{
+  "kind": "listening",
+  "userName": "Avery",
+  "year": 2026,
+  "totalMinutes": 38420,
+  "totalTracks": 1247,
+  "uniqueArtists": 218,
+  "topArtists": [
+    {
+      "name": "Phoebe Bridgers",
+      "plays": 312,
+      "minutes": 1140
+    },
+    {
+      "name": "Tom Misch",
+      "plays": 274,
+      "minutes": 1080
+    },
+    {
+      "name": "Charli XCX",
+      "plays": 218,
+      "minutes": 642
+    },
+    {
+      "name": "Big Thief",
+      "plays": 196,
+      "minutes": 921
+    },
+    {
+      "name": "Floating Points",
+      "plays": 188,
+      "minutes": 1340
+    }
+  ],
+  "topTracks": [
+    {
+      "title": "Funny You Should Ask",
+      "artist": "The 1975",
+      "plays": 89
+    },
+    {
+      "title": "Movement",
+      "artist": "Tom Misch",
+      "plays": 76
+    },
+    {
+      "title": "365",
+      "artist": "Charli XCX",
+      "plays": 71
+    },
+    {
+      "title": "Garden Song",
+      "artist": "Phoebe Bridgers",
+      "plays": 64
+    },
+    {
+      "title": "Pendulums",
+      "artist": "Floating Points",
+      "plays": 58
+    }
+  ],
+  "topGenres": [
+    {
+      "name": "indie folk",
+      "share": 0.31
+    },
+    {
+      "name": "neo-soul",
+      "share": 0.22
+    },
+    {
+      "name": "electronic",
+      "share": 0.18
+    },
+    {
+      "name": "indie rock",
+      "share": 0.14
+    },
+    {
+      "name": "ambient",
+      "share": 0.09
+    },
+    {
+      "name": "other",
+      "share": 0.06
+    }
+  ],
+  "monthlyMinutes": [
+    2840,
+    3120,
+    3480,
+    2960,
+    3220,
+    3680,
+    4120,
+    2240,
+    2980,
+    3340,
+    3120,
+    3320
+  ],
+  "mostReplayedTrack": {
+    "title": "Funny You Should Ask",
+    "artist": "The 1975",
+    "plays": 89
+  },
+  "funFacts": [
+    {
+      "kind": "comparison",
+      "text": "You listened to 640 hours of music this year. That's enough to walk from NYC to Miami."
+    },
+    {
+      "kind": "discovery",
+      "text": "You discovered 47 new artists this year."
+    },
+    {
+      "kind": "ritual",
+      "text": "Tuesday morning was your most-listened time of week. Coffee + headphones."
+    },
+    {
+      "kind": "single_artist",
+      "text": "Phoebe Bridgers got 12% of your total listening time."
+    }
+  ]
+}
